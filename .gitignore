@@ -1,0 +1,13 @@
+node_modules
+dist
+.convex
+/convex
+coverage
+*.tsbuildinfo
+/vitest.config.d.ts
+/vitest.config.d.ts.map
+/vitest.config.js
+/vitest.config.js.map
+pnpm-debug.log*
+.env
+.env.*

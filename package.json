@@ -1,0 +1,71 @@
+{
+  "name": "chat-adapter-state-convex",
+  "version": "0.1.0",
+  "description": "Convex state adapter component for Vercel Chat SDK",
+  "repository": "github:KyleKincer/chat-adapter-state-convex",
+  "homepage": "https://github.com/KyleKincer/chat-adapter-state-convex#readme",
+  "bugs": {
+    "url": "https://github.com/KyleKincer/chat-adapter-state-convex/issues"
+  },
+  "license": "MIT",
+  "type": "module",
+  "packageManager": "pnpm@10.8.0",
+  "publishConfig": {
+    "access": "public"
+  },
+  "keywords": [
+    "chat-sdk",
+    "convex",
+    "state-adapter",
+    "component"
+  ],
+  "files": [
+    "dist",
+    "src",
+    "README.md",
+    "LICENSE"
+  ],
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "types": "./dist/client/index.d.ts",
+      "default": "./dist/client/index.js"
+    },
+    "./test": "./src/test.ts",
+    "./_generated/component.js": {
+      "types": "./dist/component/_generated/component.d.ts",
+      "default": "./dist/component/_generated/component.js"
+    },
+    "./convex.config": {
+      "types": "./dist/component/convex.config.d.ts",
+      "default": "./dist/component/convex.config.js"
+    },
+    "./convex.config.js": {
+      "types": "./dist/component/convex.config.d.ts",
+      "default": "./dist/component/convex.config.js"
+    }
+  },
+  "scripts": {
+    "clean": "rm -rf dist .convex *.tsbuildinfo",
+    "codegen": "convex codegen --component-dir ./src/component",
+    "build": "tsc --project ./tsconfig.build.json",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run --typecheck",
+    "test:watch": "vitest --typecheck --clearScreen false",
+    "prepare": "npm run build"
+  },
+  "dependencies": {
+    "chat": "^4.25.0"
+  },
+  "peerDependencies": {
+    "convex": ">=1.29.0 <2"
+  },
+  "devDependencies": {
+    "@types/node": "^24.3.1",
+    "convex": "^1.32.0",
+    "convex-test": "^0.0.47",
+    "typescript": "^5.9.2",
+    "vite": "^7.1.10",
+    "vitest": "^4.1.2"
+  }
+}
