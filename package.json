@@ -38,7 +38,8 @@
     "./package.json": "./package.json",
     ".": {
       "types": "./dist/index.d.ts",
-      "import": "./dist/index.js"
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
     },
     "./test": "./src/test.ts",
     "./_generated/component.js": {
@@ -46,11 +47,13 @@
     },
     "./convex.config": {
       "types": "./dist/component/convex.config.d.ts",
-      "import": "./dist/component/convex.config.js"
+      "import": "./dist/component/convex.config.js",
+      "default": "./dist/component/convex.config.js"
     },
     "./convex.config.js": {
       "types": "./dist/component/convex.config.d.ts",
-      "import": "./dist/component/convex.config.js"
+      "import": "./dist/component/convex.config.js",
+      "default": "./dist/component/convex.config.js"
     }
   },
   "scripts": {
