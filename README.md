@@ -1,20 +1,21 @@
 # chat-adapter-state-convex
 
-Convex-backed state adapter component for [Chat SDK](https://www.npmjs.com/package/chat).
+[![npm version](https://img.shields.io/npm/v/chat-adapter-state-convex)](https://www.npmjs.com/package/chat-adapter-state-convex)
+[![npm downloads](https://img.shields.io/npm/dm/chat-adapter-state-convex)](https://www.npmjs.com/package/chat-adapter-state-convex)
 
-This package implements the full `StateAdapter` surface against a Convex
-component so Chat SDK concurrency, dedupe, subscriptions, locks, cache, list
-storage, and queue state all live in Convex.
+Convex state adapter for [Chat SDK](https://chat-sdk.dev).
 
-The v1 target is Chat SDK code running inside Convex actions or workflows.
+This package implements the full `StateAdapter` surface on top of a Convex
+component so subscriptions, locks, cache entries, lists, and queued overlap
+state all live in Convex.
+
+The v1 target is Chat SDK code running inside Convex actions and workflows.
 External Node runtimes using `ConvexHttpClient` are intentionally out of scope.
 
 ## Installation
 
-Until the first npm release, install from a pinned Git SHA:
-
 ```bash
-pnpm add github:KyleKincer/chat-adapter-state-convex#<commit>
+pnpm add chat-adapter-state-convex
 ```
 
 ## Convex setup
@@ -31,8 +32,8 @@ app.use(chatStateConvex, { name: "chatState" });
 export default app;
 ```
 
-Then regenerate Convex codegen in your app so `components.chatState` becomes
-available.
+Then regenerate Convex codegen so `components.chatState` is available in your
+app.
 
 ## Usage
 
@@ -41,16 +42,14 @@ Create the adapter inside a Convex action or workflow:
 ```ts
 import { createConvexState } from "chat-adapter-state-convex";
 import { components } from "./_generated/api";
+import type { ActionCtx } from "./_generated/server";
 
-export function createStateAdapter(ctx: {
-  runQuery: typeof import("convex/server").GenericActionCtx.prototype.runQuery;
-  runMutation: typeof import("convex/server").GenericActionCtx.prototype.runMutation;
-}) {
+export function createStateAdapter(ctx: Pick<ActionCtx, "runQuery" | "runMutation">) {
   return createConvexState({
     component: components.chatState,
     runQuery: ctx.runQuery,
     runMutation: ctx.runMutation,
-    keyPrefix: "stagehand",
+    keyPrefix: "chat-sdk",
   });
 }
 ```
@@ -58,25 +57,72 @@ export function createStateAdapter(ctx: {
 The adapter requires an explicit `connect()` before use:
 
 ```ts
-const state = createConvexState({
-  component: components.chatState,
-  runQuery: ctx.runQuery,
-  runMutation: ctx.runMutation,
-});
-
+const state = createStateAdapter(ctx);
 await state.connect();
 ```
 
-## Cleanup
+## Configuration
 
-Expired rows are not removed automatically by Convex. Run the component cleanup
-mutation on a cron, for example every 15 minutes:
+| Option | Required | Description |
+|--------|----------|-------------|
+| `component` | Yes | The mounted Convex component reference, usually `components.chatState` |
+| `runQuery` | Yes | Convex action/workflow `ctx.runQuery` |
+| `runMutation` | Yes | Convex action/workflow `ctx.runMutation` |
+| `keyPrefix` | No | Prefix for all state rows, defaults to `"chat-sdk"` |
+| `logger` | No | Logger instance, defaults to `ConsoleLogger("info").child("convex")` |
+
+## Component data model
+
+The component stores transport state in these tables:
+
+```text
+subscriptions
+locks
+cache
+lists
+queues
+```
+
+All rows are namespaced by `key_prefix`.
+
+## Features
+
+| Feature | Supported |
+|---------|-----------|
+| Persistence | Yes |
+| Multi-instance | Yes |
+| Subscriptions | Yes |
+| Distributed locking | Yes |
+| Key-value caching | Yes |
+| List storage | Yes |
+| Queue/debounce state | Yes |
+| Key prefix namespacing | Yes |
+
+## Expired state cleanup
+
+Convex does not delete expired rows automatically. Run periodic cleanup through
+an app-level wrapper action or mutation:
 
 ```ts
+import { components, internal } from "./_generated/api";
+import { cronJobs } from "convex/server";
+import { internalAction } from "./_generated/server";
+
+export const cleanupChatState = internalAction({
+  args: {},
+  handler: async (ctx) => {
+    return await ctx.runMutation(components.chatState.lib.cleanupExpiredState, {
+      limitPerTable: 100,
+    });
+  },
+});
+
+const crons = cronJobs();
+
 crons.interval(
   "chat-state-cleanup",
   { minutes: 15 },
-  components.chatState.lib.cleanupExpiredState,
+  internal.chatStateCleanup.cleanupChatState,
   {},
 );
 ```

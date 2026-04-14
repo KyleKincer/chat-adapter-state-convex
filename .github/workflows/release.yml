@@ -25,6 +25,6 @@ jobs:
       - run: pnpm build
       - run: pnpm typecheck
       - run: pnpm test
-      - run: pnpm publish --no-git-checks
+      - run: pnpm publish --no-git-checks --provenance
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

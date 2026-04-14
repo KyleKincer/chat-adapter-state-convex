@@ -10,7 +10,7 @@ import {
 import { componentsGeneric } from "convex/server";
 import { convexTest } from "convex-test";
 import { afterEach, describe, expect, it } from "vitest";
-import { createConvexState } from "./client/index.js";
+import { createConvexState } from "./index.js";
 import type { ComponentApi } from "./component/_generated/component.js";
 import { modules, register } from "./test.js";
 
