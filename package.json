@@ -1,9 +1,10 @@
 {
   "name": "chat-adapter-state-convex",
+  "packageManager": "pnpm@10.30.3",
   "version": "0.1.0",
   "description": "Convex state adapter component for Vercel Chat SDK",
+  "author": "Kyle Kincer",
   "main": "./dist/index.js",
-  "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "repository": {
     "type": "git",
@@ -15,10 +16,6 @@
   },
   "license": "MIT",
   "type": "module",
-  "packageManager": "pnpm@10.8.0",
-  "publishConfig": {
-    "access": "public"
-  },
   "keywords": [
     "chat",
     "chat-sdk",
@@ -34,6 +31,9 @@
     "src/shared.ts",
     "src/test.ts"
   ],
+  "engines": {
+    "node": ">=18"
+  },
   "exports": {
     "./package.json": "./package.json",
     ".": {
@@ -43,7 +43,8 @@
     },
     "./test": "./src/test.ts",
     "./_generated/component.js": {
-      "types": "./dist/component/_generated/component.d.ts"
+      "types": "./dist/component/_generated/component.d.ts",
+      "import": "./dist/component/_generated/component.js"
     },
     "./convex.config": {
       "types": "./dist/component/convex.config.d.ts",
@@ -66,7 +67,7 @@
     "test": "vitest run --typecheck",
     "test:watch": "vitest --typecheck --clearScreen false",
     "test:coverage": "vitest run --coverage --coverage.reporter=text",
-    "prepublishOnly": "npm run build && npm run typecheck && npm run test"
+    "prepublishOnly": "pnpm run build"
   },
   "dependencies": {
     "chat": "4.25.0"

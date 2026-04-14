@@ -1,7 +1,7 @@
 # chat-adapter-state-convex
 
 [![npm version](https://img.shields.io/npm/v/chat-adapter-state-convex)](https://www.npmjs.com/package/chat-adapter-state-convex)
-[![npm downloads](https://img.shields.io/npm/dm/chat-adapter-state-convex)](https://www.npmjs.com/package/chat-adapter-state-convex)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 Convex state adapter for [Chat SDK](https://chat-sdk.dev).
 
